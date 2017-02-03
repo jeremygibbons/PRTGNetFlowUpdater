@@ -89,18 +89,33 @@ namespace PRTGNetFlowUpdater
             }
         }
 
-        void ParseDeviceNode(TreeNodeCollection nodes, XElement deviceXEl)
+        int ParseDeviceNode(TreeNodeCollection nodes, XElement deviceXEl)
         {
             TreeNode deviceNode = new TreeNode((string)deviceXEl.Element("data").Element("name"));
+            int netFlowSensorCount = 0;
             foreach (XElement sensorXEl in deviceXEl.Element("nodes").Elements("sensor"))
             {
-
+                if(((string)sensorXEl.Element("sensorkind")).Equals("netflow9custom"))
+                {
+                    netFlowSensorCount++;
+                    deviceNode.Nodes.Add((string)sensorXEl.Element("flowchannel"));
+                }
             }
+
+            if(netFlowSensorCount > 0)
+            {
+                nodes.Add(deviceNode);
+            }
+
+            return netFlowSensorCount;
         }
 
         void ParseGroupNode(TreeNodeCollection nodes, XElement groupXEl)
         {
             TreeNode groupNode = new TreeNode((string)groupXEl.Element("data").Element("name"));
+
+            foreach(XElement deviceXEl in groupXEl.)
+
         }
     }
 }
