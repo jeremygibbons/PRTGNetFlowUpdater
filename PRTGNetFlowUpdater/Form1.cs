@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
+﻿
 namespace PRTGNetFlowUpdater
 {
+    using System;
+    using System.Windows.Forms;
+
     public partial class Form1 : Form
     {
+        PRTGXMLConfig conf;
+
         public Form1()
         {
             InitializeComponent();
@@ -21,9 +17,21 @@ namespace PRTGNetFlowUpdater
         {
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                PRTGXMLConfig conf = new PRTGXMLConfig();
+                conf = new PRTGXMLConfig();
                 conf.ConfigFileName = openFileDialog.FileName;
                 conf.LoadXMLConfigFile(trvConfig.Nodes);
+            }
+        }
+
+        private void OnTreeNodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if (e.Node.Text.StartsWith("ChannelDef_"))
+            {
+                if(conf != null)
+                {
+                    string def = conf.GetChannelDef(e.Node.Text.Substring("ChannelDef_".Length));
+                    txtDisplay.Text = def;
+                }
             }
         }
     }
