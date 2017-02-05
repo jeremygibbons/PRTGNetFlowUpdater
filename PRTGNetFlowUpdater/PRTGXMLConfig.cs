@@ -1,5 +1,5 @@
-﻿///////////////////////////////////////////////////////////////////////////////
-// Copyright <YEAR> <COPYRIGHT HOLDER>
+﻿// <copyright file="PRTGXMLConfig.cs" company="None">
+//    <para>
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to
 // deal in the Software without restriction, including without limitation the 
@@ -17,16 +17,18 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
-///////////////////////////////////////////////////////////////////////////////
+//
+// Copyright (c) 2017 Jeremy Gibbons. All rights reserved
+// </copyright>
 
 namespace PRTGNetFlowUpdater
 {
-    using System.Collections.Generic;
-    using System.Xml.Linq;
-    using System.Windows.Forms;
     using System;
+    using System.Collections.Generic;
+    using System.Windows.Forms;
+    using System.Xml.Linq;
 
-    class PRTGXMLConfig
+    public class PRTGXMLConfig
     {
         private string configFileName;
 
@@ -38,7 +40,6 @@ namespace PRTGNetFlowUpdater
 
         public PRTGXMLConfig()
         {
-
         }
 
         /// <summary>
@@ -65,7 +66,7 @@ namespace PRTGNetFlowUpdater
         /// </param>
         public void LoadXMLConfigFile(TreeNodeCollection nodes)
         {
-            if (this.ConfigFileName.Equals(""))
+            if (this.ConfigFileName.Equals(string.Empty))
             {
                 return;
             }
@@ -74,8 +75,23 @@ namespace PRTGNetFlowUpdater
 
             foreach (XElement xel in xdoc.Root.Element("basenode").Element("nodes").Element("group").Element("nodes").Elements("probenode"))
             {
-                ParseProbeNode(nodes, xel);
+                this.ParseProbeNode(nodes, xel);
             }
+        }
+
+        /// <summary>
+        /// Gets the channel definition for a given channel definition ID.
+        /// </summary>
+        /// <param name="channelDefID"></param>
+        /// <returns></returns>
+        internal string GetChannelDef(int id)
+        {
+            if (flowChannelNumToDef.ContainsKey(id))
+            {
+                return flowChannelNumToDef[id];
+            }
+
+            return "Channel Definition Not Found. No such id: " + id;
         }
 
         /// <summary>
@@ -109,10 +125,11 @@ namespace PRTGNetFlowUpdater
         }
 
         /// <summary>
-        /// 
+        /// Parses a "device" node. A device node contains sensors of various types in its "nodes" child node.
+        /// The aim here is to retrieve the netflow sensors and parse their channel definitions.
         /// </summary>
-        /// <param name="nodes"></param>
-        /// <param name="deviceXEl"></param>
+        /// <param name="nodes">The TreeNodeCollection the devices should be added to.</param>
+        /// <param name="deviceXEl">The XElement containing the device node to be parsed</param>
         /// <returns></returns>
         private int ParseDeviceNode(TreeNodeCollection nodes, XElement deviceXEl)
         {
@@ -123,8 +140,10 @@ namespace PRTGNetFlowUpdater
                 if (((string)sensorXEl.Element("data").Element("sensorkind")).Trim().Equals("netflow9custom"))
                 {
                     netFlowSensorCount++;
-                    string netflowChannelDef = ((string)sensorXEl.Element("data").Element("flowchannel")).Trim();
-                    int channelDefNum = AddChannelDef(netflowChannelDef);
+                    // Note: PRTG seems to use \r as a line separator in netflow channel defs.
+                    // We convert them to CRLF in order for display to be handled correctly in the GUI.
+                    string netflowChannelDef = ((string)sensorXEl.Element("data").Element("flowchannel")).Trim().Replace("\r", Environment.NewLine);
+                    int channelDefNum = this.AddChannelDef(netflowChannelDef);
                     deviceNode.Nodes.Add("ChannelDef_" + channelDefNum);
                 }
             }
@@ -138,10 +157,10 @@ namespace PRTGNetFlowUpdater
         }
 
         /// <summary>
-        /// 
+        /// Parses a "group" node, which contains either further groups, or devices
         /// </summary>
-        /// <param name="nodes"></param>
-        /// <param name="groupXEl"></param>
+        /// <param name="nodes">The TreeNodeCollection to which parsed nodes should be added</param>
+        /// <param name="groupXEl">The XElement to parse</param>
         /// <returns>The number of netflow sensors under this group node</returns>
         private int ParseGroupNode(TreeNodeCollection nodes, XElement groupXEl)
         {
@@ -167,40 +186,28 @@ namespace PRTGNetFlowUpdater
             return numChildren;
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="netflowChannelDef">The string representation of a NetFlow channel definition.</param>
+        /// <remarks>
+        /// It is the responsibility of the caller to make any adjustments to the channel definition,
+        /// e.g. trimming whitespace.
+        /// </remarks>
+        /// <returns>The index of the channel definition</returns>
         private int AddChannelDef(string netflowChannelDef)
         {
-            if(flowChannelDefToNum.ContainsKey(netflowChannelDef))
+            if(this.flowChannelDefToNum.ContainsKey(netflowChannelDef))
             {
-                return flowChannelDefToNum[netflowChannelDef];
+                return this.flowChannelDefToNum[netflowChannelDef];
             }
             else
             {
-                flowChannelCount++;
-                flowChannelDefToNum[netflowChannelDef] = flowChannelCount;
-                flowChannelNumToDef[flowChannelCount] = netflowChannelDef;
-                return flowChannelCount;
+                this.flowChannelCount++;
+                this.flowChannelDefToNum[netflowChannelDef] = this.flowChannelCount;
+                this.flowChannelNumToDef[this.flowChannelCount] = netflowChannelDef;
+                return this.flowChannelCount;
             }
-        }
-
-        internal string GetChannelDef(string channelDefID)
-        {
-            int id = 0;
-            try
-            {
-                id = Convert.ToInt32(channelDefID);
-            }
-            catch(FormatException fe)
-            {
-                return "Channel Definition Not Found. Format Error: " + fe.Message;
-            }
-            
-            if(flowChannelNumToDef.ContainsKey(id))
-            {
-                return flowChannelNumToDef[id];
-            }
-
-            return "Channel Definition Not Found. No such id: " + id;
         }
     }
 }
