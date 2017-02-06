@@ -25,15 +25,18 @@ namespace PRTGNetFlowUpdater
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Windows.Forms;
     using System.Xml.Linq;
+    using PRTGNetFlowUpdater.TreeNodes;
 
     public class PRTGXMLConfig
     {
         private string configFileName;
 
         private int flowChannelCount = 0;
-        private Dictionary<string, TreeNode> flowChannels = new Dictionary<string, TreeNode>();
+        private Dictionary<int, ChannelDefTreeNode> flowChannels = new Dictionary<int, ChannelDefTreeNode>();
+        private List<ProbeTreeNode> probes = new List<ProbeTreeNode>();
         private Dictionary<string, int> flowChannelDefToNum = new Dictionary<string, int>();
         private Dictionary<int, string> flowChannelNumToDef = new Dictionary<int, string>();
 
@@ -77,6 +80,24 @@ namespace PRTGNetFlowUpdater
             {
                 this.ParseProbeNode(nodes, xel);
             }
+
+            BuildChannelView();
+        }
+
+        public IEnumerable<ProbeTreeNode> Probes
+        {
+            get
+            {
+                return this.probes;
+            }
+        }
+
+        public IEnumerable<ChannelDefTreeNode> Channels
+        {
+            get
+            {
+                return this.flowChannels.Values;
+            }
         }
 
         /// <summary>
@@ -102,23 +123,24 @@ namespace PRTGNetFlowUpdater
         /// <returns>The number of netflow sensors in this probenode</returns>
         private int ParseProbeNode(TreeNodeCollection nodes, XElement probeXEl)
         {
-            TreeNode probeNode = new TreeNode(((string)probeXEl.Element("data").Element("name")).Trim());
+            ProbeTreeNode probeNode = new ProbeTreeNode((string) probeXEl.Attribute("id"), ((string)probeXEl.Element("data").Element("name")).Trim());
 
             int numChildren = 0;
 
             foreach (XElement deviceXEl in probeXEl.Element("nodes").Elements("device"))
             {
-                numChildren += this.ParseDeviceNode(probeNode.Nodes, deviceXEl);
+                numChildren += this.ParseDeviceNode(probeNode, deviceXEl);
             }
 
             foreach (XElement groupXEl in probeXEl.Element("nodes").Elements("group"))
             {
-                numChildren += this.ParseGroupNode(probeNode.Nodes, groupXEl);
+                numChildren += this.ParseGroupNode(probeNode, groupXEl);
             }
 
             if (numChildren > 0)
             {
                 nodes.Add(probeNode);
+                probes.Add(probeNode);
             }
 
             return numChildren;
@@ -131,9 +153,9 @@ namespace PRTGNetFlowUpdater
         /// <param name="nodes">The TreeNodeCollection the devices should be added to.</param>
         /// <param name="deviceXEl">The XElement containing the device node to be parsed</param>
         /// <returns></returns>
-        private int ParseDeviceNode(TreeNodeCollection nodes, XElement deviceXEl)
+        private int ParseDeviceNode(TreeNode parentNode, XElement deviceXEl)
         {
-            TreeNode deviceNode = new TreeNode(((string)deviceXEl.Element("data").Element("name")).Trim());
+            TreeNode deviceNode = new DeviceTreeNode((string)deviceXEl.Attribute("id"), ((string)deviceXEl.Element("data").Element("name")).Trim());
             int netFlowSensorCount = 0;
             foreach (XElement sensorXEl in deviceXEl.Element("nodes").Elements("sensor"))
             {
@@ -143,14 +165,14 @@ namespace PRTGNetFlowUpdater
                     // Note: PRTG seems to use \r as a line separator in netflow channel defs.
                     // We convert them to CRLF in order for display to be handled correctly in the GUI.
                     string netflowChannelDef = ((string)sensorXEl.Element("data").Element("flowchannel")).Trim().Replace("\r", Environment.NewLine);
-                    int channelDefNum = this.AddChannelDef(netflowChannelDef);
-                    deviceNode.Nodes.Add("ChannelDef_" + channelDefNum);
+                    int channelDefNum = this.AddChannelDef(netflowChannelDef, parentNode);
+                    deviceNode.Nodes.Add(new NetflowSensorTreeNode((string)sensorXEl.Attribute("id"), channelDefNum));
                 }
             }
 
             if (netFlowSensorCount > 0)
             {
-                nodes.Add(deviceNode);
+                parentNode.Nodes.Add(deviceNode);
             }
 
             return netFlowSensorCount;
@@ -162,51 +184,153 @@ namespace PRTGNetFlowUpdater
         /// <param name="nodes">The TreeNodeCollection to which parsed nodes should be added</param>
         /// <param name="groupXEl">The XElement to parse</param>
         /// <returns>The number of netflow sensors under this group node</returns>
-        private int ParseGroupNode(TreeNodeCollection nodes, XElement groupXEl)
+        private int ParseGroupNode(TreeNode parentNode, XElement groupXEl)
         {
-            TreeNode groupNode = new TreeNode(((string)groupXEl.Element("data").Element("name")).Trim());
+            TreeNode groupNode = new GroupTreeNode((string)groupXEl.Attribute("id"), ((string)groupXEl.Element("data").Element("name")).Trim());
 
             int numChildren = 0;
 
             foreach (XElement subGroupXEl in groupXEl.Element("nodes").Elements("group"))
             {
-                numChildren += this.ParseGroupNode(groupNode.Nodes, subGroupXEl);
+                numChildren += this.ParseGroupNode(groupNode, subGroupXEl);
             }
 
             foreach (XElement deviceXEl in groupXEl.Element("nodes").Elements("device"))
             {
-                numChildren += this.ParseDeviceNode(groupNode.Nodes, deviceXEl);
+                numChildren += this.ParseDeviceNode(groupNode, deviceXEl);
             }
 
             if (numChildren > 0)
             {
-                nodes.Add(groupNode);
+                parentNode.Nodes.Add(groupNode);
             }
 
             return numChildren;
         }
 
         /// <summary>
-        /// 
+        /// Adds a channel definition string to the collection and returns the corresponding index number.
+        /// If the definition already exists, the existing index number is returned.
         /// </summary>
         /// <param name="netflowChannelDef">The string representation of a NetFlow channel definition.</param>
         /// <remarks>
         /// It is the responsibility of the caller to make any adjustments to the channel definition,
         /// e.g. trimming whitespace.
         /// </remarks>
-        /// <returns>The index of the channel definition</returns>
-        private int AddChannelDef(string netflowChannelDef)
+        /// <returns>The index of the channel definition.</returns>
+        private int AddChannelDef(string netflowChannelDef, TreeNode parentNode)
         {
-            if(this.flowChannelDefToNum.ContainsKey(netflowChannelDef))
+            int channelID = -1;
+            if (this.flowChannelDefToNum.ContainsKey(netflowChannelDef))
             {
-                return this.flowChannelDefToNum[netflowChannelDef];
+                channelID = this.flowChannelDefToNum[netflowChannelDef];
             }
             else
             {
                 this.flowChannelCount++;
                 this.flowChannelDefToNum[netflowChannelDef] = this.flowChannelCount;
                 this.flowChannelNumToDef[this.flowChannelCount] = netflowChannelDef;
-                return this.flowChannelCount;
+                channelID = this.flowChannelCount;
+            }
+
+            return channelID;
+        }
+
+        private void AddDeviceTreeForChannel(int channelID, TreeNode parentNode)
+        {
+            if (!flowChannels.ContainsKey(channelID))
+            {
+                flowChannels[channelID] = new ChannelDefTreeNode(channelID, "ChannelDef_" + channelID);
+            }
+
+            TreeNode currentNode = flowChannels[channelID];
+
+            PRTGTreeNode parNode = parentNode as PRTGTreeNode;
+            PRTGTreeNode curNode = currentNode as PRTGTreeNode;
+            if(parNode == null || curNode == null)
+            {
+                return;
+            }
+
+            Stack<PRTGTreeNode> nodeList = new Stack<PRTGTreeNode>();
+
+            while(parNode != null)
+            {
+                PRTGTreeNode newNode = null;
+                if (parNode is DeviceTreeNode)
+                {
+                    newNode = new DeviceTreeNode(parNode.Id, parNode.Text);
+                }
+                else if (parNode is GroupTreeNode)
+                {
+                    newNode = new GroupTreeNode(parNode.Id, parNode.Text);
+                }
+                else if(parNode is ProbeTreeNode)
+                {
+                    newNode = new ProbeTreeNode(parNode.Id, parNode.Text);
+                }
+                nodeList.Push(newNode);
+                parNode = parNode.Parent as PRTGTreeNode;
+            }
+
+            while(nodeList.Count > 0)
+            {
+                PRTGTreeNode n = nodeList.Pop();
+                bool found = false;
+                PRTGTreeNode t = null;
+
+                foreach(PRTGTreeNode p in curNode.Nodes)
+                {
+                    if((n is DeviceTreeNode && p is DeviceTreeNode && n.Id == p.Id)
+                        || (n is GroupTreeNode && p is GroupTreeNode && n.Id == p.Id)
+                        || (n is ProbeTreeNode && p is ProbeTreeNode && n.Id == p.Id))
+                    {
+                        found = true;
+                        t = p;
+                        break;
+                    }
+                }
+
+                if (found == true)
+                {
+                    curNode = t;
+                    continue;
+                }
+
+                curNode.Nodes.Add(n);
+                curNode = n;
+            }
+        }
+
+        private void BuildChannelView()
+        {
+            foreach(ProbeTreeNode p in this.probes)
+            {
+                BuildChannelViewForNode(p);
+            }
+        }
+
+        private void BuildChannelViewForNode(TreeNode t)
+        {
+            if(t is DeviceTreeNode)
+            {
+                foreach (TreeNode s in t.Nodes)
+                {
+                    NetflowSensorTreeNode ns = s as NetflowSensorTreeNode;
+                    if (ns == null)
+                    {
+                        continue;
+                    }
+
+                    AddDeviceTreeForChannel(ns.ChannelDefinitionID, t);
+                }
+            } 
+            else
+            {
+                foreach (TreeNode c in t.Nodes)
+                {
+                    BuildChannelViewForNode(c);
+                }
             }
         }
     }

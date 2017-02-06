@@ -24,11 +24,12 @@ namespace PRTGNetFlowUpdater
 {
     using System;
     using System.Windows.Forms;
+    using PRTGNetFlowUpdater.TreeNodes;
 
     /// <summary>
     /// Main form class for the application
     /// </summary>
-    public partial class Form1 : Form
+    public partial class FormPRTGMain : Form
     {
         /// <summary>
         /// The PRTGXMLConfig instance used to parse the config file.
@@ -36,9 +37,9 @@ namespace PRTGNetFlowUpdater
         private PRTGXMLConfig conf;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Form1"/> class.
+        /// Initializes a new instance of the <see cref="FormPRTGMain"/> class.
         /// </summary>
-        public Form1()
+        public FormPRTGMain()
         {
             this.InitializeComponent();
         }
@@ -55,25 +56,65 @@ namespace PRTGNetFlowUpdater
 
         private void OnTreeNodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            if (e.Node.Text.StartsWith("ChannelDef_"))
+            if(e.Button == MouseButtons.Left)
             {
-                if (this.conf != null)
+                if (e.Node.Text.StartsWith("ChannelDef_"))
                 {
-                    int id = 0;
-                    string idstr = e.Node.Text.Substring("ChannelDef_".Length);
-                    try
+                    if (this.conf != null)
                     {
-                        id = Convert.ToInt32(idstr);
-                    }
-                    catch (FormatException fe)
-                    {
-                        return;
-                        //return "Channel Definition Not Found. Format Error: " + fe.Message;
-                    }
+                        int id = 0;
+                        string idstr = e.Node.Text.Substring("ChannelDef_".Length);
+                        try
+                        {
+                            id = Convert.ToInt32(idstr);
+                        }
+                        catch (FormatException fe)
+                        {
+                            return;
+                            //return "Channel Definition Not Found. Format Error: " + fe.Message;
+                        }
 
-                    string def = this.conf.GetChannelDef(id);
-                    this.txtDisplay.Text = def;
+                        string def = this.conf.GetChannelDef(id);
+                        this.txtDisplay.Text = def;
+                    }
                 }
+            }
+            else if(e.Button == MouseButtons.Right)
+            {
+                if(trvConfig.SelectedNode is GroupTreeNode)
+                {
+                    ctxMenuGroupNode.Show(e.Location);
+                }
+                else if (trvConfig.SelectedNode is DeviceTreeNode)
+                {
+                    ctxMenuDeviceNode.Show(e.Location);
+                }
+                else if (trvConfig.SelectedNode is NetflowSensorTreeNode)
+                {
+                    ctxMenuSensorNode.Show(e.Location);
+                }
+                else
+                {
+
+                }
+            }
+        }
+
+        private void valueViewToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            trvConfig.Nodes.Clear();
+            foreach(ChannelDefTreeNode c in conf.Channels)
+            {
+                trvConfig.Nodes.Add(c);
+            }
+        }
+
+        private void treeViewToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            trvConfig.Nodes.Clear();
+            foreach (ProbeTreeNode p in conf.Probes)
+            {
+                trvConfig.Nodes.Add(p);
             }
         }
     }
