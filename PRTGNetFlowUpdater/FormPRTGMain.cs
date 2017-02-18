@@ -68,7 +68,7 @@ namespace PRTGNetFlowUpdater
                         {
                             id = Convert.ToInt32(idstr);
                         }
-                        catch (FormatException fe)
+                        catch (FormatException)
                         {
                             return;
                             //return "Channel Definition Not Found. Format Error: " + fe.Message;
@@ -138,7 +138,7 @@ namespace PRTGNetFlowUpdater
                     {
                         id = Convert.ToInt32(idstr);
                     }
-                    catch (FormatException fe)
+                    catch (FormatException)
                     {
                         return;
                         //return "Channel Definition Not Found. Format Error: " + fe.Message;

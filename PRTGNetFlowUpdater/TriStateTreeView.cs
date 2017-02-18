@@ -1,4 +1,13 @@
-﻿namespace PRTGNetFlowUpdater
+﻿// <copyright file="TriStateTreeView.cs" company="None">
+// 
+// Code originally posted in March 2012 by "Fred_Informatix" on
+// https://www.codeproject.com/Articles/340565/Simple-Tri-State-TreeView
+// 
+// The code is covered by the CPOL license as described here:
+// https://www.codeproject.com/info/cpol10.aspx
+// </copyright>
+
+namespace PRTGNetFlowUpdater
 {
     using System.ComponentModel;
     using System.Drawing;
@@ -7,7 +16,6 @@
 
     public class TriStateCBTreeView : TreeView
     {
-
         // ~~~ fields ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         ImageList _ilStateImages;
@@ -17,28 +25,35 @@
 
         // ~~~ constructor ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-        /// &lt;summary>
+        /// <summary>
         /// Creates a new instance
         /// of this control.
-        /// &lt;/summary>
+        /// <summary>
         public TriStateCBTreeView()
             : base()
         {
-            _ilStateImages = new ImageList();                            // first we create our state image
-            CheckBoxState cbsState = CheckBoxState.UncheckedNormal;      // list and pre-init check state.
+            // first we create our state image
+            // list and pre-init check state.
+            _ilStateImages = new ImageList();                              
+            CheckBoxState cbsState = CheckBoxState.UncheckedNormal;
 
-            for (int i = 0; i <= 2; i++) {                                                                // let's iterate each tri-state
-                Bitmap bmpCheckBox = new Bitmap(16, 16);                   // creating a new checkbox bitmap
-                Graphics gfxCheckBox = Graphics.FromImage(bmpCheckBox);      // and getting graphics object from
-                switch (i)                                                  // it...
+            // let's iterate each tri-state
+            // creating a new checkbox bitmap
+            // and getting graphics object from it...
+            for (int i = 0; i <= 2; i++) {                                 
+                Bitmap bmpCheckBox = new Bitmap(16, 16);                   
+                Graphics gfxCheckBox = Graphics.FromImage(bmpCheckBox);    
+                switch (i)
                 {
                     case 0: cbsState = CheckBoxState.UncheckedNormal; break;
                     case 1: cbsState = CheckBoxState.CheckedNormal; break;
                     case 2: cbsState = CheckBoxState.MixedNormal; break;
                 }
-                CheckBoxRenderer.DrawCheckBox(gfxCheckBox, new Point(2, 2), cbsState);  // ...rendering
-                gfxCheckBox.Save();                                         // the checkbox and
-                _ilStateImages.Images.Add(bmpCheckBox);                      // adding to state image list.
+
+                // ...rendering the checkbox and adding to state image list.
+                CheckBoxRenderer.DrawCheckBox(gfxCheckBox, new Point(2, 2), cbsState);
+                gfxCheckBox.Save();
+                _ilStateImages.Images.Add(bmpCheckBox);
             }
 
             _bUseTriState = true;
@@ -46,11 +61,9 @@
 
         // ~~~ properties ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-        /// &lt;summary>
-        /// Gets or sets to display
-        /// checkboxes in the tree
-        /// view.
-        /// &lt;/summary>
+        /// <summary>
+        /// Gets or sets to display checkboxes in the tree view.
+        /// </summary>
         [Category("Appearance")]
         [Description("Sets tree view to display checkboxes or not.")]
         [DefaultValue(false)]
@@ -72,11 +85,9 @@
             set { base.StateImageList = value; }
         }
 
-        /// &lt;summary>
-        /// Gets or sets to support
-        /// tri-state in the checkboxes
-        /// or not.
-        /// &lt;/summary>
+        /// <summary>
+        /// Gets or sets to support tri-state in the checkboxes or not.
+        /// </summary>
         [Category("Appearance")]
         [Description("Sets tree view to use tri-state checkboxes or not.")]
         [DefaultValue(true)]
@@ -98,28 +109,43 @@
             {
                 try
                 {
+                    // if the current node has a mixed state
+                    // then its parent is set to the same state
                     if (tNode.StateImageIndex == 2)
-                    {                   // if the current node has a mixed state
-                        ParentNode.Checked = false;                     // then its parent is set to the same state
+                    {                   
+                        ParentNode.Checked = false;
                         ParentNode.StateImageIndex = 2;
                         return;
                     }
+
                     int CheckedCount = 0;
                     int UnCheckedCount = 0;
+
                     foreach (TreeNode ChildNode in ParentNode.Nodes)
-                    {  // we count the checked and unchecked states
-                        if (ChildNode.StateImageIndex <= 0)             // of each node at the current level
+                    {
+                        // we count the checked and unchecked states
+                        // of each node at the current level
+                        if (ChildNode.StateImageIndex <= 0)
+                        {            
                             UnCheckedCount++;
+                        }
                         else if (ChildNode.StateImageIndex == 1)
+                        {
                             CheckedCount++;
-                        if (ChildNode.StateImageIndex == 2 ||           // if one node has a mixed state or there
+                        }
+
+                        // if one node has a mixed state or there
+                        // are checked and unchecked states, then
+                        // the parent node is set to a mixed state
+                        if (ChildNode.StateImageIndex == 2 ||           
                            (CheckedCount > 0 && UnCheckedCount > 0))
-                        {  // are checked and unchecked states, then
-                            ParentNode.Checked = false;                 // the parent node is set to a mixed state
+                        {  
+                            ParentNode.Checked = false;                 
                             ParentNode.StateImageIndex = 2;
                             return;
                         }
                     }
+
                     if (UnCheckedCount > 0)
                     {
                         ParentNode.Checked = false;
@@ -133,28 +159,41 @@
                 }
                 finally
                 {
-                    SetParentState(ParentNode);                         // the parent node becomes the current node
+                    // the parent node becomes the current node
+                    SetParentState(ParentNode);                         
                 }
             }
         }
+
         protected void SetChildrenState(TreeNode tNode, bool RootNode)
         {
             if (!RootNode)
             {
-                tNode.Checked = (tNode.Parent.StateImageIndex == 1);    // the child state is inherited
-                tNode.StateImageIndex = tNode.Parent.StateImageIndex;   // from the parent state
+                // the child state is inherited from the parent state
+                tNode.Checked = (tNode.Parent.StateImageIndex == 1);    
+                tNode.StateImageIndex = tNode.Parent.StateImageIndex;
             }
+
             foreach (TreeNode ChildNode in tNode.Nodes)
+            {
                 SetChildrenState(ChildNode, false);
+            }
         }
+
         public void SetState(TreeNode tNode, int NewState)
         {
             if (NewState < 0 || NewState > 2)
+            {
                 NewState = 0;
+            }
+
             tNode.Checked = (NewState == 1);
+
+            // we verify if the checked state has
+            // not been canceled in a BeforeCheck event
             if (tNode.Checked == (NewState == 1))
-            {                     // we verify if the checked state has
-                tNode.StateImageIndex = NewState;                       // not been canceled in a BeforeCheck event
+            {                     
+                tNode.StateImageIndex = NewState;                       
 
                 _bPreventCheckEvent = true;
 
@@ -165,16 +204,16 @@
             }
         }
 
-        /// &lt;summary>
+        /// <summary>
         /// Initializes the nodes state.
-        /// &lt;/summary>
-
+        /// </summary>
         public void InitializeStates(TreeNodeCollection tNodes)
         {
             foreach (TreeNode tnCurrent in tNodes)
-            {                   // set tree state image
+            {
+                // set tree state image to each child node...
                 if (tnCurrent.StateImageIndex == -1)
-                {                 // to each child node...
+                {
                     _bPreventCheckEvent = true;
 
                     if (tnCurrent.Parent != null)
@@ -183,27 +222,34 @@
                         tnCurrent.StateImageIndex = tnCurrent.Parent.StateImageIndex;
                     }
                     else
+                    {
                         tnCurrent.StateImageIndex = tnCurrent.Checked ? 1 : 0;
+                    }
 
                     _bPreventCheckEvent = false;
                 }
+
                 InitializeStates(tnCurrent.Nodes);
             }
         }
+
         public void InitializeCBImages()
         {
-            if (!CheckBoxes)                   // nothing to do here if
-                return;                       // checkboxes are hidden.
+            // nothing to do here if checkboxes are hidden.
+            if (!CheckBoxes)
+            {
+                return;
+            }
 
-            base.CheckBoxes = false;               // hide normal checkboxes...
+            // hide normal checkboxes...
+            base.CheckBoxes = false;               
 
             InitializeStates(this.Nodes);
         }
 
-        /// &lt;summary>
+        /// <summary>
         /// Refreshes this control.
-        /// &lt;/summary>
-
+        /// </summary>
         public override void Refresh()
         {
             base.Refresh();
@@ -244,7 +290,10 @@
             if (_bPreventCheckEvent)
             {
                 if (AutoCheck != null)
+                {
                     AutoCheck(this, e);
+                }
+
                 return;
             }
 
@@ -255,10 +304,14 @@
         {
             base.OnNodeMouseClick(e);
 
-            int iSpacing = ImageList == null ? 0 : 20;      // if user clicked area
-            if (e.X > e.Node.Bounds.Left - iSpacing ||      // *not* used by the state
-                e.X < e.Node.Bounds.Left - (iSpacing + 14) ||    // image we can leave here.
-                 e.Button != MouseButtons.Left) {
+            int iSpacing = ImageList == null ? 0 : 20;
+            
+            // if user clicked area *not* used by the state
+            // image we can leave here.
+            if (e.X > e.Node.Bounds.Left - iSpacing ||      
+                e.X < e.Node.Bounds.Left - (iSpacing + 14) ||    
+                 e.Button != MouseButtons.Left)
+            {
                 return;
             }
 
