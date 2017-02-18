@@ -78,24 +78,9 @@ namespace PRTGNetFlowUpdater
                         this.txtDisplay.Text = def;
                     }
                 }
-            }
-            else if(e.Button == MouseButtons.Right)
-            {
-                if(trvConfig.SelectedNode is GroupTreeNode)
-                {
-                    ctxMenuGroupNode.Show(e.Location);
-                }
-                else if (trvConfig.SelectedNode is DeviceTreeNode)
-                {
-                    ctxMenuDeviceNode.Show(e.Location);
-                }
-                else if (trvConfig.SelectedNode is NetflowSensorTreeNode)
-                {
-                    ctxMenuSensorNode.Show(e.Location);
-                }
                 else
                 {
-
+                    this.txtDisplay.Text = e.Node.Text;
                 }
             }
         }
@@ -115,6 +100,85 @@ namespace PRTGNetFlowUpdater
             foreach (ProbeTreeNode p in conf.Probes)
             {
                 trvConfig.Nodes.Add(p);
+            }
+        }
+
+        private void OnTreeNodeMouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                TreeNode node = trvConfig.GetNodeAt(e.Location);
+
+                //trvConfig.SelectedNode = node;
+
+                if (node is GroupTreeNode)
+                {
+                    ctxMenuGroupNode.Show(this.trvConfig, e.Location);
+                }
+                else if (node is DeviceTreeNode)
+                {
+                    ctxMenuDeviceNode.Show(this.trvConfig, e.Location);
+                }
+                else if (node is NetflowSensorTreeNode)
+                {
+                    ctxMenuSensorNode.Show(this.trvConfig, e.Location);
+                }
+            }
+        }
+
+        private void OnTreeViewAfterNodeSelect(object sender, TreeViewEventArgs e)
+        {
+            if (e.Node.Text.StartsWith("ChannelDef_"))
+            {
+                if (this.conf != null)
+                {
+                    int id = 0;
+                    string idstr = e.Node.Text.Substring("ChannelDef_".Length);
+                    try
+                    {
+                        id = Convert.ToInt32(idstr);
+                    }
+                    catch (FormatException fe)
+                    {
+                        return;
+                        //return "Channel Definition Not Found. Format Error: " + fe.Message;
+                    }
+
+                    string def = this.conf.GetChannelDef(id);
+                    this.txtDisplay.Text = def;
+                }
+            }
+            else
+            {
+                this.txtDisplay.Text = e.Node.Text;
+            }
+        }
+
+        private void OnTreeViewAfterCheck(object sender, TreeViewEventArgs e)
+        {
+            // The code only executes if the user caused the checked state to change.
+            if (e.Action != TreeViewAction.Unknown)
+            {
+                if (e.Node.Nodes.Count > 0)
+                {
+                    /* Calls the CheckAllChildNodes method, passing in the current 
+                    Checked value of the TreeNode whose checked state changed. */
+                    this.CheckAllChildNodes(e.Node, e.Node.Checked);
+                }
+            }
+        }
+
+        // Updates all child tree nodes recursively.
+        private void CheckAllChildNodes(TreeNode treeNode, bool nodeChecked)
+        {
+            foreach (TreeNode node in treeNode.Nodes)
+            {
+                node.Checked = nodeChecked;
+                if (node.Nodes.Count > 0)
+                {
+                    // If the current node has child nodes, call the CheckAllChildsNodes method recursively.
+                    this.CheckAllChildNodes(node, nodeChecked);
+                }
             }
         }
     }

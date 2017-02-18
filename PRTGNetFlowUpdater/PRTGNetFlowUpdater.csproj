@@ -73,6 +73,9 @@
     <Compile Include="TreeNodes\NetflowSensorTreeNode.cs" />
     <Compile Include="TreeNodes\ProbeTreeNode.cs" />
     <Compile Include="TreeNodes\PRTGTreeNode.cs" />
+    <Compile Include="TriStateTreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <EmbeddedResource Include="FormPRTGMain.resx">
       <DependentUpon>FormPRTGMain.cs</DependentUpon>
     </EmbeddedResource>

@@ -9,6 +9,7 @@
         public PRTGTreeNode(string id, string text) : base(text)
         {
             this.Id = id;
+            
         }
 
         public string Id
