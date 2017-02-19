@@ -102,20 +102,37 @@ namespace PRTGNetFlowUpdater
 
         private void valueViewToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if(valueViewToolStripMenuItem.Checked == true)
+            {
+                return;
+            }
+
             trvConfig.Nodes.Clear();
             foreach(ChannelDefTreeNode c in conf.Channels)
             {
                 trvConfig.Nodes.Add(c);
             }
+
+            treeViewToolStripMenuItem.Checked = false;
+            valueViewToolStripMenuItem.Checked = true;
         }
 
         private void treeViewToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if(treeViewToolStripMenuItem.Checked == true)
+            {
+                return;
+            }
+
             trvConfig.Nodes.Clear();
+
             foreach (ProbeTreeNode p in conf.Probes)
             {
                 trvConfig.Nodes.Add(p);
             }
+
+            valueViewToolStripMenuItem.Checked = false;
+            treeViewToolStripMenuItem.Checked = true;
         }
     }
 }

@@ -310,6 +310,12 @@ namespace PRTGNetFlowUpdater
             }
         }
 
+        /// <summary>
+        /// Constucts the "channel view" for a given node. This walks the original tree
+        /// recursively, and constructs a new tree by invoking AddDeviceTreeForChannel on each
+        /// sensor that it finds.
+        /// </summary>
+        /// <param name="t">The TreeNode to visit</param>
         private void BuildChannelViewForNode(TreeNode t)
         {
             if(t is DeviceTreeNode)
