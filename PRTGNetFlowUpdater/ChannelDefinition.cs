@@ -1,4 +1,5 @@
-﻿// <copyright file="ProbeTreeNode.cs" company="None">
+﻿// <copyright file="ChannelDefinition.cs" company="None">
+//    <para>
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to
 // deal in the Software without restriction, including without limitation the 
@@ -20,12 +21,12 @@
 // Copyright (c) 2017 Jeremy Gibbons. All rights reserved
 // </copyright>
 
-namespace PRTGNetFlowUpdater.TreeNodes
+namespace PRTGNetFlowUpdater
 {
-    public class ProbeTreeNode : PRTGTreeNode
+    class ChannelDefinition
     {
-        public ProbeTreeNode(string id, string text) : base(id, text)
-        {
-        }
+        public int ChannelID { get; set; }
+        public string Name { get; set; }
+        public string Rule { get; set; }
     }
 }

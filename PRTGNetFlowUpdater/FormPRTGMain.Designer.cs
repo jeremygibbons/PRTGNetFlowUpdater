@@ -53,7 +53,7 @@ namespace PRTGNetFlowUpdater
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("PRTG Configuration");
+            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("PRTG Configuration");
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -67,12 +67,12 @@ namespace PRTGNetFlowUpdater
             this.editTemplatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.trvConfig = new System.Windows.Forms.TreeView();
+            this.trvConfig = new PRTGNetFlowUpdater.TriStateCBTreeView();
             this.txtDisplay = new System.Windows.Forms.TextBox();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.ctxMenuSensorNode = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.ctxMenuGroupNode = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.editSingleNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxMenuGroupNode = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.editGroupNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxMenuDeviceNode = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.editDeviceSensorsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -144,14 +144,14 @@ namespace PRTGNetFlowUpdater
             this.treeViewToolStripMenuItem.CheckOnClick = true;
             this.treeViewToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.treeViewToolStripMenuItem.Name = "treeViewToolStripMenuItem";
-            this.treeViewToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.treeViewToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.treeViewToolStripMenuItem.Text = "Tree View";
             this.treeViewToolStripMenuItem.Click += new System.EventHandler(this.treeViewToolStripMenuItem_Click);
             // 
             // valueViewToolStripMenuItem
             // 
             this.valueViewToolStripMenuItem.Name = "valueViewToolStripMenuItem";
-            this.valueViewToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.valueViewToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.valueViewToolStripMenuItem.Text = "Value View";
             this.valueViewToolStripMenuItem.Click += new System.EventHandler(this.valueViewToolStripMenuItem_Click);
             // 
@@ -166,7 +166,7 @@ namespace PRTGNetFlowUpdater
             this.templatesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.editTemplatesToolStripMenuItem});
             this.templatesToolStripMenuItem.Name = "templatesToolStripMenuItem";
-            this.templatesToolStripMenuItem.Size = new System.Drawing.Size(74, 20);
+            this.templatesToolStripMenuItem.Size = new System.Drawing.Size(73, 20);
             this.templatesToolStripMenuItem.Text = "Templates";
             // 
             // editTemplatesToolStripMenuItem
@@ -207,13 +207,15 @@ namespace PRTGNetFlowUpdater
             this.trvConfig.Dock = System.Windows.Forms.DockStyle.Fill;
             this.trvConfig.Location = new System.Drawing.Point(0, 0);
             this.trvConfig.Name = "trvConfig";
-            treeNode3.Name = "PRTGConfigRoot";
-            treeNode3.Text = "PRTG Configuration";
+            treeNode1.Name = "PRTGConfigRoot";
+            treeNode1.StateImageIndex = 0;
+            treeNode1.Text = "PRTG Configuration";
             this.trvConfig.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode3});
+            treeNode1});
             this.trvConfig.Size = new System.Drawing.Size(284, 342);
             this.trvConfig.TabIndex = 1;
-            this.trvConfig.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.OnTreeNodeMouseClick);
+            this.trvConfig.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnTreeViewAfterNodeSelect);
+            this.trvConfig.MouseUp += new System.Windows.Forms.MouseEventHandler(this.OnTreeNodeMouseUp);
             // 
             // txtDisplay
             // 
@@ -233,7 +235,14 @@ namespace PRTGNetFlowUpdater
             this.ctxMenuSensorNode.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.editSingleNodeToolStripMenuItem});
             this.ctxMenuSensorNode.Name = "contextMenuStrip1";
-            this.ctxMenuSensorNode.Size = new System.Drawing.Size(162, 26);
+            this.ctxMenuSensorNode.Size = new System.Drawing.Size(162, 48);
+            // 
+            // editSingleNodeToolStripMenuItem
+            // 
+            this.editSingleNodeToolStripMenuItem.Name = "editSingleNodeToolStripMenuItem";
+            this.editSingleNodeToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.editSingleNodeToolStripMenuItem.Text = "Edit Single Node";
+            this.editSingleNodeToolStripMenuItem.Click += new System.EventHandler(this.editSingleNodeToolStripMenuItem_Click);
             // 
             // ctxMenuGroupNode
             // 
@@ -241,12 +250,6 @@ namespace PRTGNetFlowUpdater
             this.editGroupNodeToolStripMenuItem});
             this.ctxMenuGroupNode.Name = "ctxMenuGroupNode";
             this.ctxMenuGroupNode.Size = new System.Drawing.Size(163, 26);
-            // 
-            // editSingleNodeToolStripMenuItem
-            // 
-            this.editSingleNodeToolStripMenuItem.Name = "editSingleNodeToolStripMenuItem";
-            this.editSingleNodeToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
-            this.editSingleNodeToolStripMenuItem.Text = "Edit Single Node";
             // 
             // editGroupNodeToolStripMenuItem
             // 
@@ -307,7 +310,6 @@ namespace PRTGNetFlowUpdater
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.TreeView trvConfig;
         private System.Windows.Forms.TextBox txtDisplay;
         private System.Windows.Forms.ContextMenuStrip ctxMenuSensorNode;
         private System.Windows.Forms.ToolStripMenuItem templatesToolStripMenuItem;
@@ -317,6 +319,7 @@ namespace PRTGNetFlowUpdater
         private System.Windows.Forms.ToolStripMenuItem editGroupNodeToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip ctxMenuDeviceNode;
         private System.Windows.Forms.ToolStripMenuItem editDeviceSensorsToolStripMenuItem;
+        private TriStateCBTreeView trvConfig;
     }
 }
 
