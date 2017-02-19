@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChannelDefinition.cs" />
     <Compile Include="FormPRTGMain.cs">
       <SubType>Form</SubType>
     </Compile>

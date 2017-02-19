@@ -235,13 +235,14 @@ namespace PRTGNetFlowUpdater
             this.ctxMenuSensorNode.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.editSingleNodeToolStripMenuItem});
             this.ctxMenuSensorNode.Name = "contextMenuStrip1";
-            this.ctxMenuSensorNode.Size = new System.Drawing.Size(162, 26);
+            this.ctxMenuSensorNode.Size = new System.Drawing.Size(162, 48);
             // 
             // editSingleNodeToolStripMenuItem
             // 
             this.editSingleNodeToolStripMenuItem.Name = "editSingleNodeToolStripMenuItem";
             this.editSingleNodeToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.editSingleNodeToolStripMenuItem.Text = "Edit Single Node";
+            this.editSingleNodeToolStripMenuItem.Click += new System.EventHandler(this.editSingleNodeToolStripMenuItem_Click);
             // 
             // ctxMenuGroupNode
             // 

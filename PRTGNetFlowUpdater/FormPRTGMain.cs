@@ -181,5 +181,16 @@ namespace PRTGNetFlowUpdater
                 }
             }
         }
+
+        private void editSingleNodeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NetflowSensorTreeNode netf = trvConfig.SelectedNode as NetflowSensorTreeNode;
+            if(netf != null)
+            {
+                FormSensorDefEditor frmSensorEditor = new FormSensorDefEditor();
+                frmSensorEditor.SensorDef = this.conf.GetChannelDef(netf.ChannelDefinitionID);
+                frmSensorEditor.ShowDialog();
+            }
+        }
     }
 }
