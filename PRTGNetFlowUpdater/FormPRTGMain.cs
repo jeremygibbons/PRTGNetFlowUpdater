@@ -126,7 +126,7 @@ namespace PRTGNetFlowUpdater
             {
                 TreeNode node = trvConfig.GetNodeAt(e.Location);
 
-                //trvConfig.SelectedNode = node;
+                trvConfig.SelectedNode = node;
 
                 if (node is GroupTreeNode)
                 {

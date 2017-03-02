@@ -50,7 +50,10 @@ namespace PRTGNetFlowUpdater
                 foreach(int id in channels.Keys)
                 {
                     ChannelDefinition cd = channels[id];
-                    this.dataGridViewRules.Rows.Add(cd.ChannelID, cd.Name, "Custom", cd.Rule);
+                    DataGridViewRow row = new DataGridViewRow();
+                    row.CreateCells(this.dataGridViewRules, new object[] { cd.ChannelID, cd.Name, "Custom", cd.Rule });
+                    row.ContextMenuStrip = this.contextMenuDataGrid;
+                    this.dataGridViewRules.Rows.Add(row);
                 }
             }
         }
