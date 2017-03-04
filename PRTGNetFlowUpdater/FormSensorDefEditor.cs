@@ -81,5 +81,11 @@ namespace PRTGNetFlowUpdater
 
             return dic;
         }
+
+        private void addTemplateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TemplateEditor te = new TemplateEditor();
+            DialogResult dr = te.ShowDialog();
+        }
     }
 }

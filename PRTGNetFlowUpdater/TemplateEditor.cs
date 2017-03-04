@@ -75,5 +75,10 @@ namespace PRTGNetFlowUpdater
             txtAppName.Text = this.AppRuleName;
             txtRule.Text = this.AppRule;
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
     }
 }

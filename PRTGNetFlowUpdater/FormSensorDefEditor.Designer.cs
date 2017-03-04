@@ -156,7 +156,7 @@
             this.addTemplateToolStripMenuItem,
             this.removeTemplateToolStripMenuItem});
             this.templatesToolStripMenuItem.Name = "templatesToolStripMenuItem";
-            this.templatesToolStripMenuItem.Size = new System.Drawing.Size(73, 20);
+            this.templatesToolStripMenuItem.Size = new System.Drawing.Size(74, 20);
             this.templatesToolStripMenuItem.Text = "Templates";
             // 
             // editTemplatesToolStripMenuItem
@@ -170,6 +170,7 @@
             this.addTemplateToolStripMenuItem.Name = "addTemplateToolStripMenuItem";
             this.addTemplateToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.addTemplateToolStripMenuItem.Text = "Add template";
+            this.addTemplateToolStripMenuItem.Click += new System.EventHandler(this.addTemplateToolStripMenuItem_Click);
             // 
             // removeTemplateToolStripMenuItem
             // 

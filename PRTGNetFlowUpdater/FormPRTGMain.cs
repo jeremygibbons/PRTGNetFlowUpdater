@@ -204,9 +204,11 @@ namespace PRTGNetFlowUpdater
             NetflowSensorTreeNode netf = trvConfig.SelectedNode as NetflowSensorTreeNode;
             if(netf != null)
             {
-                FormSensorDefEditor frmSensorEditor = new FormSensorDefEditor();
-                frmSensorEditor.SensorDef = this.conf.GetChannelDef(netf.ChannelDefinitionID);
-                frmSensorEditor.ShowDialog();
+                using (FormSensorDefEditor frmSensorEditor = new FormSensorDefEditor())
+                {
+                    frmSensorEditor.SensorDef = this.conf.GetChannelDef(netf.ChannelDefinitionID);
+                    frmSensorEditor.ShowDialog();
+                }
             }
         }
     }
