@@ -156,7 +156,7 @@
             this.addTemplateToolStripMenuItem,
             this.removeTemplateToolStripMenuItem});
             this.templatesToolStripMenuItem.Name = "templatesToolStripMenuItem";
-            this.templatesToolStripMenuItem.Size = new System.Drawing.Size(74, 20);
+            this.templatesToolStripMenuItem.Size = new System.Drawing.Size(73, 20);
             this.templatesToolStripMenuItem.Text = "Templates";
             // 
             // editTemplatesToolStripMenuItem
@@ -190,7 +190,7 @@
             this.Controls.Add(this.dataGridViewRules);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "FormSensorDefEditor";
-            this.Text = "Sensor Definition Editor";
+            this.Text = " ";
             this.Load += new System.EventHandler(this.FormSensorDefEditor_Load);
             this.Shown += new System.EventHandler(this.OnFormShown);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewRules)).EndInit();

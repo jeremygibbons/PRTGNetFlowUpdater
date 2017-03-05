@@ -27,40 +27,53 @@ namespace PRTGNetFlowUpdater
 
     class TemplateManager
     {
-        List<RuleTemplate> templates = new List<RuleTemplate>();
+        Dictionary<string, RuleTemplate> templates = new Dictionary<string, RuleTemplate>();
 
-        enum TemplateLoadResult
+        public string TemplateFileName { get; set; }
+
+        public enum TemplateLoadResult
         {
             Success = 0,
             FileDoesNotExist = -1,
             EmptyFileName = -2
         }
 
-        public TemplateManager()
+        public enum TemplateModResult
         {
-
+            TemplateAddSuccess = 0,
+            TemplateModSuccess = 1,
+            TemplateDelSuccess = 2,
+            TemplateIncomplete = -1,
+            TemplateNameExists = -2,
+            TemplateNameDoesNotExist = -3,
+            TemplateNameInvalid = -4
         }
 
-        private TemplateLoadResult LoadXMLTemplateFile(string filename)
+        public TemplateManager(string file)
         {
-            if (filename.Equals(string.Empty))
+            this.TemplateFileName = file;
+        }
+
+        private TemplateLoadResult LoadXMLTemplateFile()
+        {
+            if (this.TemplateFileName.Equals(string.Empty))
             {
                 return TemplateLoadResult.EmptyFileName;
             }
 
-            if (!System.IO.File.Exists(filename))
+            if (!System.IO.File.Exists(this.TemplateFileName))
             {
                 return TemplateLoadResult.FileDoesNotExist;
             }
 
-            XDocument xdoc = XDocument.Load(filename);
+            XDocument xdoc = XDocument.Load(this.TemplateFileName);
 
             foreach (XElement xel in xdoc.Root.Element("templates").Elements("template"))
             {
                 RuleTemplate rt = this.ParseTemplate(xel);
                 if(rt != null)
                 {
-                    templates.Add(rt);
+                    templates.Add(rt.TemplateName, rt);
                 }
             }
 
@@ -76,6 +89,83 @@ namespace PRTGNetFlowUpdater
             rt.AppRule = (string)templElt.Element("rule");
 
             return rt;
+        }
+
+        public IEnumerable<RuleTemplate> Templates
+        {
+            get
+            {
+                return this.templates.Values;
+            }
+        }
+
+        public RuleTemplate GetRule(string ruleName)
+        {
+            if(ruleName == null || ruleName.Equals(string.Empty))
+            {
+                return null;
+            }
+
+            if(!templates.ContainsKey(ruleName))
+            {
+                return null;
+            }
+
+            return templates[ruleName];
+        }
+
+        public TemplateModResult AddRule(RuleTemplate rule)
+        {
+            if(rule.TemplateName.Equals(string.Empty)
+                || rule.AppName.Equals(string.Empty)
+                || rule.AppRule.Equals(string.Empty))
+            {
+                return TemplateModResult.TemplateIncomplete;
+            }
+
+            if(templates.ContainsKey(rule.TemplateName))
+            {
+                return TemplateModResult.TemplateNameExists;
+            }
+
+            templates.Add(rule.TemplateName, rule);
+
+            return TemplateModResult.TemplateAddSuccess;
+        }
+
+        public TemplateModResult DeleteRule(string templateName)
+        {
+            if(templateName.Equals(string.Empty))
+            {
+                return TemplateModResult.TemplateNameInvalid;
+            }
+
+            if(!templates.ContainsKey(templateName))
+            {
+                return TemplateModResult.TemplateNameDoesNotExist;
+            }
+
+            templates.Remove(templateName);
+
+            return TemplateModResult.TemplateDelSuccess;
+        }
+
+        public TemplateModResult ModifyRule(RuleTemplate rt)
+        {
+            if (rt.TemplateName.Equals(string.Empty))
+            {
+                return TemplateModResult.TemplateNameInvalid;
+            }
+
+            if (rt.AppName.Equals(string.Empty)
+                || rt.AppRule.Equals(string.Empty))
+            {
+                return TemplateModResult.TemplateIncomplete;
+            }
+
+            templates[rt.TemplateName] = rt;
+
+            return TemplateModResult.TemplateModSuccess;
         }
     }
 }
