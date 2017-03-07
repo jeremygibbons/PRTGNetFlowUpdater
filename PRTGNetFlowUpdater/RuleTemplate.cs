@@ -22,7 +22,7 @@
 
 namespace PRTGNetFlowUpdater
 {
-    class RuleTemplate
+    public class RuleTemplate
     {
         public string TemplateName { get; set; }
         public string AppName { get; set; }

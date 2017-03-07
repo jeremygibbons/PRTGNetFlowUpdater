@@ -31,35 +31,19 @@ namespace PRTGNetFlowUpdater
 
     public class PRTGXMLConfig
     {
-        private string configFileName;
+        public string ConfigFileName { get; set; }
 
         private int flowChannelCount = 0;
-        private Dictionary<int, ChannelDefTreeNode> flowChannels = new Dictionary<int, ChannelDefTreeNode>();
+        private readonly Dictionary<int, ChannelDefTreeNode> flowChannels = new Dictionary<int, ChannelDefTreeNode>();
         private List<ProbeTreeNode> probes = new List<ProbeTreeNode>();
-        private Dictionary<string, int> flowChannelDefToNum = new Dictionary<string, int>();
-        private Dictionary<int, string> flowChannelNumToDef = new Dictionary<int, string>();
+        private readonly Dictionary<string, int> flowChannelDefToNum = new Dictionary<string, int>();
+        private readonly Dictionary<int, string> flowChannelNumToDef = new Dictionary<int, string>();
 
 
         public PRTGXMLConfig()
         {
         }
-
-        /// <summary>
-        /// Gets or sets the path for the configuration file
-        /// </summary>
-        public string ConfigFileName
-        {
-            get
-            {
-                return this.configFileName;
-            }
-
-            set
-            {
-                this.configFileName = value;
-            }
-        }
-
+        
         /// <summary>
         /// Loads a PRTG Configuration.dat XML file
         /// </summary>
@@ -219,7 +203,8 @@ namespace PRTGNetFlowUpdater
         /// <returns>The index of the channel definition.</returns>
         private int AddChannelDef(string netflowChannelDef, TreeNode parentNode)
         {
-            int channelID = -1;
+            int channelID;
+
             if (this.flowChannelDefToNum.ContainsKey(netflowChannelDef))
             {
                 channelID = this.flowChannelDefToNum[netflowChannelDef];

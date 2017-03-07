@@ -37,11 +37,17 @@ namespace PRTGNetFlowUpdater
         private PRTGXMLConfig conf;
 
         /// <summary>
+        /// The <see cref="TemplateManager"/> instance used to populate template tools.
+        /// </summary>
+        private TemplateManager templMan;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="FormPRTGMain"/> class.
         /// </summary>
         public FormPRTGMain()
         {
             this.InitializeComponent();
+            this.templMan = new TemplateManager(@"D:\Users\jeremy.gibbons\Source\Repos\PrtgRuleTemplates.xml");
         }
 
         private void LoadToolStripMenuItem_Click(object sender, EventArgs e)
@@ -49,6 +55,7 @@ namespace PRTGNetFlowUpdater
             if (this.openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 this.conf = new PRTGXMLConfig();
+                this.templMan.LoadXMLTemplateFile();
                 this.conf.ConfigFileName = this.openFileDialog.FileName;
                 this.conf.LoadXMLConfigFile(this.trvConfig.Nodes);
             }
@@ -56,7 +63,7 @@ namespace PRTGNetFlowUpdater
 
         private void OnTreeNodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            if(e.Button == MouseButtons.Left)
+            if (e.Button == MouseButtons.Left)
             {
                 if (e.Node.Text.StartsWith("ChannelDef_"))
                 {
@@ -71,7 +78,6 @@ namespace PRTGNetFlowUpdater
                         catch (FormatException)
                         {
                             return;
-                            //return "Channel Definition Not Found. Format Error: " + fe.Message;
                         }
 
                         string def = this.conf.GetChannelDef(id);
@@ -87,13 +93,13 @@ namespace PRTGNetFlowUpdater
 
         private void valueViewToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(valueViewToolStripMenuItem.Checked == true)
+            if (valueViewToolStripMenuItem.Checked == true)
             {
                 return;
             }
 
             trvConfig.Nodes.Clear();
-            foreach(ChannelDefTreeNode c in conf.Channels)
+            foreach (ChannelDefTreeNode c in conf.Channels)
             {
                 trvConfig.Nodes.Add(c);
             }
@@ -104,7 +110,7 @@ namespace PRTGNetFlowUpdater
 
         private void treeViewToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(treeViewToolStripMenuItem.Checked == true)
+            if (treeViewToolStripMenuItem.Checked == true)
             {
                 return;
             }
@@ -158,7 +164,6 @@ namespace PRTGNetFlowUpdater
                     catch (FormatException)
                     {
                         return;
-                        //return "Channel Definition Not Found. Format Error: " + fe.Message;
                     }
 
                     string def = this.conf.GetChannelDef(id);
@@ -174,14 +179,11 @@ namespace PRTGNetFlowUpdater
         private void OnTreeViewAfterCheck(object sender, TreeViewEventArgs e)
         {
             // The code only executes if the user caused the checked state to change.
-            if (e.Action != TreeViewAction.Unknown)
+            if ((e.Action != TreeViewAction.Unknown) && (e.Node.Nodes.Count > 0))
             {
-                if (e.Node.Nodes.Count > 0)
-                {
-                    /* Calls the CheckAllChildNodes method, passing in the current 
-                    Checked value of the TreeNode whose checked state changed. */
-                    this.CheckAllChildNodes(e.Node, e.Node.Checked);
-                }
+                /* Calls the CheckAllChildNodes method, passing in the current 
+                Checked value of the TreeNode whose checked state changed. */
+                this.CheckAllChildNodes(e.Node, e.Node.Checked);
             }
         }
 
@@ -202,9 +204,9 @@ namespace PRTGNetFlowUpdater
         private void editSingleNodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             NetflowSensorTreeNode netf = trvConfig.SelectedNode as NetflowSensorTreeNode;
-            if(netf != null)
+            if (netf != null)
             {
-                using (FormSensorDefEditor frmSensorEditor = new FormSensorDefEditor())
+                using (FormSensorDefEditor frmSensorEditor = new FormSensorDefEditor(this.templMan))
                 {
                     frmSensorEditor.SensorDef = this.conf.GetChannelDef(netf.ChannelDefinitionID);
                     frmSensorEditor.ShowDialog();

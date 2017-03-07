@@ -25,8 +25,13 @@ namespace PRTGNetFlowUpdater
     using System.Collections.Generic;
     using System.Xml.Linq;
 
-    class TemplateManager
+    public class TemplateManager
     {
+        public delegate void TemplateEventHandler(RuleTemplate rt);
+        public event TemplateEventHandler OnAddTemplate;
+        public event TemplateEventHandler OnRemoveTemplate;
+        public event TemplateEventHandler OnModifyTemplate;
+
         Dictionary<string, RuleTemplate> templates = new Dictionary<string, RuleTemplate>();
 
         public string TemplateFileName { get; set; }
@@ -54,7 +59,7 @@ namespace PRTGNetFlowUpdater
             this.TemplateFileName = file;
         }
 
-        private TemplateLoadResult LoadXMLTemplateFile()
+        public TemplateLoadResult LoadXMLTemplateFile()
         {
             if (this.TemplateFileName.Equals(string.Empty))
             {
@@ -68,7 +73,7 @@ namespace PRTGNetFlowUpdater
 
             XDocument xdoc = XDocument.Load(this.TemplateFileName);
 
-            foreach (XElement xel in xdoc.Root.Element("templates").Elements("template"))
+            foreach (XElement xel in xdoc.Root.Elements("template"))
             {
                 RuleTemplate rt = this.ParseTemplate(xel);
                 if(rt != null)
@@ -85,7 +90,7 @@ namespace PRTGNetFlowUpdater
             RuleTemplate rt = new RuleTemplate();
 
             rt.TemplateName = (string)templElt.Attribute("name");
-            rt.AppName = (string)templElt.Element("ruleName");
+            rt.AppName = (string)templElt.Element("rulename");
             rt.AppRule = (string)templElt.Element("rule");
 
             return rt;
@@ -101,7 +106,7 @@ namespace PRTGNetFlowUpdater
 
         public RuleTemplate GetRule(string ruleName)
         {
-            if(ruleName == null || ruleName.Equals(string.Empty))
+            if(string.IsNullOrEmpty(ruleName))
             {
                 return null;
             }
@@ -135,7 +140,7 @@ namespace PRTGNetFlowUpdater
 
         public TemplateModResult DeleteRule(string templateName)
         {
-            if(templateName.Equals(string.Empty))
+            if(string.IsNullOrEmpty(templateName))
             {
                 return TemplateModResult.TemplateNameInvalid;
             }

@@ -63,7 +63,6 @@
             this.dataGridViewRules.RowHeadersVisible = false;
             this.dataGridViewRules.Size = new System.Drawing.Size(851, 279);
             this.dataGridViewRules.TabIndex = 0;
-            this.dataGridViewRules.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             // 
             // colRuleNum
             // 
@@ -129,7 +128,6 @@
             this.button2.TabIndex = 2;
             this.button2.Text = "Cancel";
             this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // statusStrip1
             // 
@@ -156,7 +154,7 @@
             this.addTemplateToolStripMenuItem,
             this.removeTemplateToolStripMenuItem});
             this.templatesToolStripMenuItem.Name = "templatesToolStripMenuItem";
-            this.templatesToolStripMenuItem.Size = new System.Drawing.Size(73, 20);
+            this.templatesToolStripMenuItem.Size = new System.Drawing.Size(74, 20);
             this.templatesToolStripMenuItem.Text = "Templates";
             // 
             // editTemplatesToolStripMenuItem
@@ -171,6 +169,7 @@
             this.addTemplateToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.addTemplateToolStripMenuItem.Text = "Add template";
             this.addTemplateToolStripMenuItem.Click += new System.EventHandler(this.addTemplateToolStripMenuItem_Click);
+            this.addTemplateToolStripMenuItem.MouseHover += new System.EventHandler(this.addTemplateToolStripMenuItem_MouseHover);
             // 
             // removeTemplateToolStripMenuItem
             // 
@@ -191,7 +190,6 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "FormSensorDefEditor";
             this.Text = " ";
-            this.Load += new System.EventHandler(this.FormSensorDefEditor_Load);
             this.Shown += new System.EventHandler(this.OnFormShown);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewRules)).EndInit();
             this.contextMenuDataGrid.ResumeLayout(false);
