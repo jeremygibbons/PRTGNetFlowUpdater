@@ -1,8 +1,31 @@
-﻿using System;
-using System.Windows.Forms;
+﻿// <copyright file="TemplateEditor.cs" company="None">
+//    <para>
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the 
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is 
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+//
+// Copyright (c) 2017 Jeremy Gibbons. All rights reserved
+// </copyright>
 
 namespace PRTGNetFlowUpdater
 {
+    using System;
+    using System.Windows.Forms;
+
     public partial class TemplateEditor : Form
     {
         private TemplateManager templateManager;
@@ -19,14 +42,16 @@ namespace PRTGNetFlowUpdater
             this.templateManager = tm;
         }
 
-        public TemplateEditor(string templName, string appName, string rule, TemplateManager tm)
+        public TemplateEditor(string templName, TemplateManager tm)
         {
             InitializeComponent();
-            this.TemplateName = templName;
-            this.AppRuleName = appName;
-            this.AppRule = rule;
 
             this.templateManager = tm;
+            RuleTemplate rt = tm.GetRule(templName);
+
+            this.TemplateName = templName;
+            this.AppRuleName = rt.AppName;
+            this.AppRule = rt.AppRule;   
         }
         
         private void TemplateEditor_Load(object sender, EventArgs e)
@@ -46,7 +71,15 @@ namespace PRTGNetFlowUpdater
             RuleTemplate rt = new RuleTemplate(txtTemplateName.Text, txtAppName.Text, txtRule.Text);
             if(rt.IsValidRule())
             {
-                this.templateManager.AddRule(rt);
+                if (this.templateManager.GetRule(rt.TemplateName) == null)
+                {
+                    this.templateManager.AddRule(rt);
+                }
+                else
+                {
+                    this.templateManager.ModifyRule(rt);
+                }
+
                 this.Close();
             }
             else
