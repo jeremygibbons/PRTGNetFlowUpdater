@@ -31,6 +31,7 @@ namespace PRTGNetFlowUpdater
         public event TemplateEventHandler OnAddTemplate;
         public event TemplateEventHandler OnRemoveTemplate;
         public event TemplateEventHandler OnModifyTemplate;
+
         private readonly Dictionary<string, RuleTemplate> templates = new Dictionary<string, RuleTemplate>();
 
         public string TemplateFileName { get; set; }
@@ -40,6 +41,14 @@ namespace PRTGNetFlowUpdater
             Success = 0,
             FileDoesNotExist = -1,
             EmptyFileName = -2
+        }
+
+        public IEnumerable<RuleTemplate> Templates
+        {
+            get
+            {
+                return this.templates.Values;
+            }
         }
 
         public enum TemplateModResult

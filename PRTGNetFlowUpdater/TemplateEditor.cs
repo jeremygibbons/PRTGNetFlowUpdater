@@ -13,13 +13,15 @@ namespace PRTGNetFlowUpdater
 
         public string AppRule { get; set; }
 
-        public TemplateEditor()
+        public TemplateEditor(TemplateManager tm)
         {
             InitializeComponent();
+            this.templateManager = tm;
         }
 
         public TemplateEditor(string templName, string appName, string rule, TemplateManager tm)
         {
+            InitializeComponent();
             this.TemplateName = templName;
             this.AppRuleName = appName;
             this.AppRule = rule;

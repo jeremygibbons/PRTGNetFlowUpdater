@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+	<template name="Test template 1">
+		<rulename>Rule 1</rulename>
+		<rule>Protocol[UDP] and&#x0d;((Port[19302-19309]) and (IP[64.18.0.0/20] or IP[64.233.160.0/19] or IP[66.102.0.0/20] or IP[66.249.80.0/20] or IP[72.14.192.0/18] or IP[74.125.0.0/16] or IP[173.194.0.0/16] or IP[207.126.144.0/20] or IP[209.85.128.0/17] or IP[216.58.192.0/19] or IP[216.239.32.0/19]))</rule>
+	</template>
+	<template name="Test template 2">
+		<rulename>Rule 2</rulename>
+		<rule>IP[172.26.21.70/32] or IP[172.31.233.106/32] or IP[172.31.233.109/32] or IP[172.31.233.107/32] or IP[172.31.233.108/32] or IP[172.31.233.101/32] or IP[172.31.233.104/32]</rule>
+	</template>
+</templates>

@@ -59,11 +59,11 @@ namespace PRTGNetFlowUpdater
 
         private void addTemplateToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            TemplateEditor te = new TemplateEditor();
+            TemplateEditor te = new TemplateEditor(this.templManager);
             DialogResult dr = te.ShowDialog();
         }
 
-        private void addTemplateToolStripMenuItem_MouseHover(object sender, EventArgs e)
+        private void EditTemplateToolStripMenuItem_MouseHover(object sender, EventArgs e)
         {
             ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
             if(sender == null)

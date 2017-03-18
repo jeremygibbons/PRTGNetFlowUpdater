@@ -47,7 +47,7 @@ namespace PRTGNetFlowUpdater
         public FormPRTGMain()
         {
             this.InitializeComponent();
-            this.templMan = new TemplateManager(@"D:\Users\jeremy.gibbons\Source\Repos\PrtgRuleTemplates.xml");
+            this.templMan = new TemplateManager(Properties.Settings.Default.TemplatesFileName);
         }
 
         private void LoadToolStripMenuItem_Click(object sender, EventArgs e)

@@ -162,6 +162,7 @@
             this.editTemplatesToolStripMenuItem.Name = "editTemplatesToolStripMenuItem";
             this.editTemplatesToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.editTemplatesToolStripMenuItem.Text = "Edit template";
+            this.editTemplatesToolStripMenuItem.MouseEnter += new System.EventHandler(this.EditTemplateToolStripMenuItem_MouseHover);
             // 
             // addTemplateToolStripMenuItem
             // 
@@ -169,7 +170,6 @@
             this.addTemplateToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.addTemplateToolStripMenuItem.Text = "Add template";
             this.addTemplateToolStripMenuItem.Click += new System.EventHandler(this.addTemplateToolStripMenuItem_Click);
-            this.addTemplateToolStripMenuItem.MouseHover += new System.EventHandler(this.addTemplateToolStripMenuItem_MouseHover);
             // 
             // removeTemplateToolStripMenuItem
             // 
