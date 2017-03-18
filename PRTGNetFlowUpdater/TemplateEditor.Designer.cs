@@ -30,8 +30,8 @@
         {
             this.label1 = new System.Windows.Forms.Label();
             this.txtTemplateName = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.btnCancel = new System.Windows.Forms.Button();
+            this.btnOK = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.txtAppName = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -56,24 +56,25 @@
             this.txtTemplateName.Size = new System.Drawing.Size(315, 20);
             this.txtTemplateName.TabIndex = 1;
             // 
-            // button1
+            // btnCancel
             // 
-            this.button1.Location = new System.Drawing.Point(341, 319);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(110, 30);
-            this.button1.TabIndex = 4;
-            this.button1.Text = "Cancel";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.btnCancel.Location = new System.Drawing.Point(341, 319);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(110, 30);
+            this.btnCancel.TabIndex = 4;
+            this.btnCancel.Text = "Cancel";
+            this.btnCancel.UseVisualStyleBackColor = true;
+            this.btnCancel.Click += new System.EventHandler(this.BtnCancel_Click);
             // 
-            // button2
+            // btnOK
             // 
-            this.button2.Location = new System.Drawing.Point(225, 319);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(110, 30);
-            this.button2.TabIndex = 5;
-            this.button2.Text = "OK";
-            this.button2.UseVisualStyleBackColor = true;
+            this.btnOK.Location = new System.Drawing.Point(225, 319);
+            this.btnOK.Name = "btnOK";
+            this.btnOK.Size = new System.Drawing.Size(110, 30);
+            this.btnOK.TabIndex = 5;
+            this.btnOK.Text = "OK";
+            this.btnOK.UseVisualStyleBackColor = true;
+            this.btnOK.Click += new System.EventHandler(this.BtnOK_Click);
             // 
             // groupBox1
             // 
@@ -127,8 +128,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(463, 357);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btnOK);
+            this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.txtTemplateName);
             this.Controls.Add(this.label1);
             this.MaximizeBox = false;
@@ -150,8 +151,8 @@
 
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox txtTemplateName;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.TextBox txtAppName;
         private System.Windows.Forms.Label label3;

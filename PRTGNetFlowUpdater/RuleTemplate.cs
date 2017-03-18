@@ -22,10 +22,61 @@
 
 namespace PRTGNetFlowUpdater
 {
-    class RuleTemplate
+    using System.Text.RegularExpressions;
+
+    public class RuleTemplate
     {
         public string TemplateName { get; set; }
         public string AppName { get; set; }
         public string AppRule { get; set; }
+
+        private static Regex SingleWord = new Regex(@"^[a-zA-Z0-9\-_]+$");
+
+        public RuleTemplate(string templateName, string appName, string appRule)
+        {
+            this.TemplateName = templateName;
+            this.AppName = appName;
+            this.AppRule = appRule;
+        }
+
+        public bool IsValidRule()
+        {
+            
+
+            if (string.IsNullOrWhiteSpace(TemplateName)
+                || string.IsNullOrWhiteSpace(AppName)
+                || string.IsNullOrWhiteSpace(AppRule)
+                || !SingleWord.IsMatch(this.AppName))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public string GetError()
+        {
+            if (string.IsNullOrWhiteSpace(TemplateName))
+            {
+                return "Template name cannot be empty!";
+            }
+
+            if (string.IsNullOrWhiteSpace(AppName))
+            {
+                return "Application name cannot be empty!";
+            }
+
+            if (string.IsNullOrWhiteSpace(AppRule))
+            {
+                return "Rule cannot be empty";
+            }
+
+            if (!SingleWord.IsMatch(this.AppName))
+            {
+                return "Application name must be a single word!";
+            }
+
+            return string.Empty;
+        }
     }
 }

@@ -25,9 +25,9 @@ namespace PRTGNetFlowUpdater
     using System.Collections.Generic;
     using System.Xml.Linq;
 
-    class TemplateManager
+    public class TemplateManager
     {
-        Dictionary<string, RuleTemplate> templates = new Dictionary<string, RuleTemplate>();
+        private readonly Dictionary<string, RuleTemplate> templates = new Dictionary<string, RuleTemplate>();
 
         public string TemplateFileName { get; set; }
 
@@ -82,31 +82,23 @@ namespace PRTGNetFlowUpdater
 
         private RuleTemplate ParseTemplate(XElement templElt)
         {
-            RuleTemplate rt = new RuleTemplate();
-
-            rt.TemplateName = (string)templElt.Attribute("name");
-            rt.AppName = (string)templElt.Element("ruleName");
-            rt.AppRule = (string)templElt.Element("rule");
+            RuleTemplate rt = new RuleTemplate(
+                templateName: (string)templElt.Attribute("name"),
+                appName: (string)templElt.Element("ruleName"),
+                appRule: (string)templElt.Element("rule")
+                );
 
             return rt;
         }
 
-        public IEnumerable<RuleTemplate> Templates
-        {
-            get
-            {
-                return this.templates.Values;
-            }
-        }
-
         public RuleTemplate GetRule(string ruleName)
         {
-            if(ruleName == null || ruleName.Equals(string.Empty))
+            if (string.IsNullOrEmpty(ruleName))
             {
                 return null;
             }
 
-            if(!templates.ContainsKey(ruleName))
+            if (!templates.ContainsKey(ruleName))
             {
                 return null;
             }
@@ -135,7 +127,7 @@ namespace PRTGNetFlowUpdater
 
         public TemplateModResult DeleteRule(string templateName)
         {
-            if(templateName.Equals(string.Empty))
+            if( string.IsNullOrEmpty(templateName))
             {
                 return TemplateModResult.TemplateNameInvalid;
             }

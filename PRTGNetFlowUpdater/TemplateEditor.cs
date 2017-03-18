@@ -1,74 +1,32 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace PRTGNetFlowUpdater
 {
     public partial class TemplateEditor : Form
     {
-        private string templateName;
+        private TemplateManager templateManager;
 
-        private string appRuleName;
+        public string TemplateName { get; set; }
 
-        private string appRule;
+        public string AppRuleName { get; set; }
+
+        public string AppRule { get; set; }
 
         public TemplateEditor()
         {
             InitializeComponent();
         }
 
-        public TemplateEditor(string templName, string appName, string rule)
+        public TemplateEditor(string templName, string appName, string rule, TemplateManager tm)
         {
             this.TemplateName = templName;
             this.AppRuleName = appName;
             this.AppRule = rule;
+
+            this.templateManager = tm;
         }
-
-        public string TemplateName
-        {
-            get
-            {
-                return this.templateName;
-            }
-
-            set
-            {
-                this.templateName = value;
-            }
-        }
-
-        public string AppRuleName
-        {
-            get
-            {
-                return this.appRuleName;
-            }
-
-            set
-            {
-                this.appRuleName = value;
-            }
-        }
-
-        public string AppRule
-        {
-            get
-            {
-                return this.appRule;
-            }
-
-            set
-            {
-                this.appRule = value;
-            }
-        }
-
+        
         private void TemplateEditor_Load(object sender, EventArgs e)
         {
             txtTemplateName.Text = this.TemplateName;
@@ -76,9 +34,23 @@ namespace PRTGNetFlowUpdater
             txtRule.Text = this.AppRule;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void BtnCancel_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void BtnOK_Click(object sender, EventArgs e)
+        {
+            RuleTemplate rt = new RuleTemplate(txtTemplateName.Text, txtAppName.Text, txtRule.Text);
+            if(rt.IsValidRule())
+            {
+                this.templateManager.AddRule(rt);
+                this.Close();
+            }
+            else
+            {
+                MessageBox.Show(rt.GetError());
+            }
         }
     }
 }
