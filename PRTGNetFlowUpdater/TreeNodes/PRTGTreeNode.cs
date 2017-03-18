@@ -22,12 +22,12 @@
 
 namespace PRTGNetFlowUpdater.TreeNodes
 {
+    using System;
     using System.Windows.Forms;
 
+    [Serializable]
     public class PRTGTreeNode : TreeNode
     {
-        private string id;
-
         public PRTGTreeNode(string id, string text) : base(text)
         {
             this.Id = id;
@@ -36,14 +36,8 @@ namespace PRTGNetFlowUpdater.TreeNodes
 
         public string Id
         {
-            get
-            {
-                return this.id;
-            }
-            set
-            {
-                this.id = value;
-            }
+            get;
+            set;
         }
     }
 }

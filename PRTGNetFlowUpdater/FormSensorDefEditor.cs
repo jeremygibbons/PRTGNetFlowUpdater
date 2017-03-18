@@ -7,39 +7,14 @@ namespace PRTGNetFlowUpdater
 {
     public partial class FormSensorDefEditor : Form
     {
-        private string sensorDef;
+        public string SensorDef { get; set; }
 
-        public FormSensorDefEditor()
+        private TemplateManager templManager;
+
+        public FormSensorDefEditor(TemplateManager tm)
         {
             InitializeComponent();
-        }
-
-        public string SensorDef
-        {
-            get
-            {
-                return this.sensorDef;
-            }
-
-            set
-            {
-                this.sensorDef = value;
-            }
-        }
-
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
-        private void FormSensorDefEditor_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-
+            this.templManager = tm;
         }
 
         private void OnFormShown(object sender, EventArgs e)
@@ -86,6 +61,23 @@ namespace PRTGNetFlowUpdater
         {
             TemplateEditor te = new TemplateEditor();
             DialogResult dr = te.ShowDialog();
+        }
+
+        private void addTemplateToolStripMenuItem_MouseHover(object sender, EventArgs e)
+        {
+            ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
+            if(sender == null)
+            {
+                return;
+            }
+
+            menuItem.DropDownItems.Clear();
+
+            IEnumerable<RuleTemplate> rules = this.templManager.Templates;
+            foreach (RuleTemplate rule in rules)
+            {
+                menuItem.DropDownItems.Add(rule.TemplateName);
+            }
         }
     }
 }

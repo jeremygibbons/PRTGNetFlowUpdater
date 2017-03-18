@@ -27,6 +27,10 @@ namespace PRTGNetFlowUpdater
 
     public class TemplateManager
     {
+        public delegate void TemplateEventHandler(RuleTemplate rt);
+        public event TemplateEventHandler OnAddTemplate;
+        public event TemplateEventHandler OnRemoveTemplate;
+        public event TemplateEventHandler OnModifyTemplate;
         private readonly Dictionary<string, RuleTemplate> templates = new Dictionary<string, RuleTemplate>();
 
         public string TemplateFileName { get; set; }
@@ -54,7 +58,7 @@ namespace PRTGNetFlowUpdater
             this.TemplateFileName = file;
         }
 
-        private TemplateLoadResult LoadXMLTemplateFile()
+        public TemplateLoadResult LoadXMLTemplateFile()
         {
             if (this.TemplateFileName.Equals(string.Empty))
             {
@@ -68,7 +72,7 @@ namespace PRTGNetFlowUpdater
 
             XDocument xdoc = XDocument.Load(this.TemplateFileName);
 
-            foreach (XElement xel in xdoc.Root.Element("templates").Elements("template"))
+            foreach (XElement xel in xdoc.Root.Elements("template"))
             {
                 RuleTemplate rt = this.ParseTemplate(xel);
                 if(rt != null)
@@ -127,7 +131,7 @@ namespace PRTGNetFlowUpdater
 
         public TemplateModResult DeleteRule(string templateName)
         {
-            if( string.IsNullOrEmpty(templateName))
+            if(string.IsNullOrEmpty(templateName))
             {
                 return TemplateModResult.TemplateNameInvalid;
             }
